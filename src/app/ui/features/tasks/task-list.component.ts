@@ -1,0 +1,155 @@
+import { Component, inject, signal } from '@angular/core';
+import { Task } from '@domain/task/task.entity';
+import { ListTasksUseCase } from '@application/task/use-cases/list-tasks.use-case';
+import { StatusRingComponent } from '@ui/shared/status-ring.component';
+import { TaskFormComponent } from './task-form.component';
+import { ThemeToggleComponent } from '@ui/shared/theme-toggle.component';
+import { RouterLink } from '@angular/router';
+
+const PAGE_SIZE = 10;
+
+@Component({
+  selector: 'app-task-list',
+  imports: [TaskFormComponent, StatusRingComponent, RouterLink],
+  template: `
+    <div class="container">
+        <h1>Tarefas</h1>
+
+      <app-task-form (created)="onCreated()" />
+
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+
+      <ul>
+        @for (task of tasks(); track task.id) {
+          <li>
+            <app-status-ring [status]="task.status" />
+            <a class="title" [routerLink]="['/tasks', task.id]">{{ task.title }}</a>
+            <span class="priority">{{ task.priority }}</span>
+          </li>
+        } @empty {
+          <li class="empty">Nenhuma tarefa encontrada.</li>
+        }
+      </ul>
+
+      @if (totalPages() > 1) {
+        <nav>
+          <button (click)="goTo(page() - 1)" [disabled]="page() === 0">← Anterior</button>
+
+          <span>Página {{ page() + 1 }} de {{ totalPages() }}</span>
+
+          <button (click)="goTo(page() + 1)" [disabled]="page() >= totalPages() - 1">
+            Próxima →
+          </button>
+        </nav>
+      }
+    </div>
+  `,
+  styles: `
+    .container {
+      max-width: 640px;
+      padding: 32px 24px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    li.empty {
+      color: var(--text-2);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .title {
+      font-weight: 500;
+      flex: 1;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .title:hover {
+      color: var(--accent);
+    }
+
+    strong {
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .priority {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-2);
+    }
+
+    .error {
+      color: var(--signal);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    nav span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-2);
+    }
+  `,
+})
+export class TaskListComponent {
+  private readonly listTasks = inject(ListTasksUseCase);
+
+  readonly tasks = signal<Task[]>([]);
+  readonly page = signal(0);
+  readonly totalPages = signal(0);
+  readonly error = signal<string | null>(null);
+
+  constructor() {
+    this.load();
+  }
+
+  goTo(page: number): void {
+    this.page.set(page);
+    this.load();
+  }
+
+  onCreated(): void {
+    this.page.set(0);
+    this.load();
+  }
+
+  private load(): void {
+    this.error.set(null);
+    this.listTasks
+      .execute({
+        page: this.page(),
+        size: PAGE_SIZE,
+        sortField: 'CREATED_AT',
+        sortDirection: 'DESC',
+      })
+      .then((result) => {
+        this.tasks.set(result.content);
+        this.totalPages.set(result.totalPages);
+      })
+      .catch(() => this.error.set('Não foi possível carregar as tarefas. A API está rodando?'));
+  }
+}
