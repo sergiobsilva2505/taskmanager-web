@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Task } from '@domain/task/task.entity';
+import { nextStatus } from '@domain/task/task.value-objects';
 import { ListTasksUseCase } from '@application/task/use-cases/list-tasks.use-case';
+import { ChangeTaskStatusUseCase } from '@application/task/use-cases/change-task-status.use-case';
 import { StatusRingComponent } from '@ui/shared/status-ring.component';
 import { TaskFormComponent } from './task-form.component';
-import { ThemeToggleComponent } from '@ui/shared/theme-toggle.component';
-import { RouterLink } from '@angular/router';
 
 const PAGE_SIZE = 10;
 
@@ -13,7 +14,7 @@ const PAGE_SIZE = 10;
   imports: [TaskFormComponent, StatusRingComponent, RouterLink],
   template: `
     <div class="container">
-        <h1>Tarefas</h1>
+      <h1>Tarefas</h1>
 
       <app-task-form (created)="onCreated()" />
 
@@ -24,7 +25,14 @@ const PAGE_SIZE = 10;
       <ul>
         @for (task of tasks(); track task.id) {
           <li>
-            <app-status-ring [status]="task.status" />
+            <button
+              class="ring-btn"
+              (click)="advanceStatus(task, $event)"
+              [disabled]="!nextStatus(task.status)"
+              [attr.aria-label]="'Avançar status de ' + task.title"
+            >
+              <app-status-ring [status]="task.status" />
+            </button>
             <a class="title" [routerLink]="['/tasks', task.id]">{{ task.title }}</a>
             <span class="priority">{{ task.priority }}</span>
           </li>
@@ -36,9 +44,7 @@ const PAGE_SIZE = 10;
       @if (totalPages() > 1) {
         <nav>
           <button (click)="goTo(page() - 1)" [disabled]="page() === 0">← Anterior</button>
-
           <span>Página {{ page() + 1 }} de {{ totalPages() }}</span>
-
           <button (click)="goTo(page() + 1)" [disabled]="page() >= totalPages() - 1">
             Próxima →
           </button>
@@ -69,10 +75,18 @@ const PAGE_SIZE = 10;
       color: var(--text-2);
     }
 
-    header {
-      display: flex;
+    .ring-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
+    }
+
+    .ring-btn:disabled {
+      cursor: default;
+      opacity: 1;
     }
 
     .title {
@@ -84,11 +98,6 @@ const PAGE_SIZE = 10;
 
     .title:hover {
       color: var(--accent);
-    }
-
-    strong {
-      font-weight: 500;
-      flex: 1;
     }
 
     .priority {
@@ -117,11 +126,14 @@ const PAGE_SIZE = 10;
 })
 export class TaskListComponent {
   private readonly listTasks = inject(ListTasksUseCase);
+  private readonly changeStatus = inject(ChangeTaskStatusUseCase);
 
   readonly tasks = signal<Task[]>([]);
   readonly page = signal(0);
   readonly totalPages = signal(0);
   readonly error = signal<string | null>(null);
+
+  protected readonly nextStatus = nextStatus;
 
   constructor() {
     this.load();
@@ -135,6 +147,14 @@ export class TaskListComponent {
   onCreated(): void {
     this.page.set(0);
     this.load();
+  }
+
+  async advanceStatus(task: Task, event: Event): Promise<void> {
+    event.preventDefault();
+    const next = nextStatus(task.status);
+    if (!next) return;
+    const updated = await this.changeStatus.execute(task.id, next);
+    this.tasks.update((list) => list.map((t) => (t.id === updated.id ? updated : t)));
   }
 
   private load(): void {

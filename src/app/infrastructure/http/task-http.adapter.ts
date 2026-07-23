@@ -9,6 +9,7 @@ import {
   TaskRepositoryPort,
 } from '@application/task/ports/task-repository.port';
 import { API_BASE_URL } from './api.config';
+import { TaskStatus } from '@domain/task/task.value-objects';
 
 @Injectable({ providedIn: 'root' })
 export class TaskHttpAdapter implements TaskRepositoryPort {
@@ -22,9 +23,7 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
     if (query.sortField) params = params.set('sortField', query.sortField);
     if (query.sortDirection) params = params.set('sortDirection', query.sortDirection);
 
-    return firstValueFrom(
-      this.http.get<PagedResult<Task>>(`${this.baseUrl}/tasks`, { params }),
-    );
+    return firstValueFrom(this.http.get<PagedResult<Task>>(`${this.baseUrl}/tasks`, { params }));
   }
 
   getById(id: string): Promise<Task> {
@@ -33,5 +32,13 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
 
   create(input: CreateTaskInput): Promise<Task> {
     return firstValueFrom(this.http.post<Task>(`${this.baseUrl}/tasks`, input));
+  }
+
+  changeStatus(id: string, status: TaskStatus): Promise<Task> {
+    return firstValueFrom(this.http.patch<Task>(`${this.baseUrl}/tasks/${id}/status`, { status }));
+  }
+
+  delete(id: string): Promise<void> {
+    return firstValueFrom(this.http.delete<void>(`${this.baseUrl}/tasks/${id}`));
   }
 }

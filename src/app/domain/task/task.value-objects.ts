@@ -14,3 +14,15 @@ export function statusProgress(status: TaskStatus): number {
       return 0;
   }
 }
+
+export function nextStatus(status: TaskStatus): TaskStatus | null {
+  switch (status) {
+    case 'TODO':
+      return 'IN_PROGRESS';
+    case 'IN_PROGRESS':
+      return 'DONE';
+    case 'DONE':
+    case 'CANCELLED':
+      return null; // sem próximo — anel não clicável
+  }
+}

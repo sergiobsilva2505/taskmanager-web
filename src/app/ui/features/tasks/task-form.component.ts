@@ -9,18 +9,9 @@ import { CreateTaskUseCase } from '@application/task/use-cases/create-task.use-c
   imports: [FormsModule],
   template: `
     <form (ngSubmit)="submit()">
-      <input
-        name="title"
-        [(ngModel)]="title"
-        placeholder="Título da tarefa"
-        required
-      />
+      <input name="title" [(ngModel)]="title" placeholder="Título da tarefa" required />
 
-      <input
-        name="description"
-        [(ngModel)]="description"
-        placeholder="Descrição (opcional)"
-      />
+      <input name="description" [(ngModel)]="description" placeholder="Descrição (opcional)" />
 
       <select name="priority" [(ngModel)]="priority">
         <option value="LOW">Baixa</option>

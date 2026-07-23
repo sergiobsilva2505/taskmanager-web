@@ -5,6 +5,8 @@ import { Task } from '@domain/task/task.entity';
 import { isOverdue } from '@domain/task/task.entity';
 import { GetTaskByIdUseCase } from '@application/task/use-cases/get-task-by-id.use-case';
 import { StatusRingComponent } from '@ui/shared/status-ring.component';
+import { Router } from '@angular/router';
+import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-case';
 
 @Component({
   selector: 'app-task-detail',
@@ -45,6 +47,10 @@ import { StatusRingComponent } from '@ui/shared/status-ring.component';
           <dt>Atualizada em</dt>
           <dd>{{ t.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
         </dl>
+
+        <button class="delete-btn" (click)="remove()" [disabled]="deleting()">
+          {{ deleting() ? 'Excluindo…' : 'Excluir tarefa' }}
+        </button>
       } @else {
         <p class="loading">Carregando…</p>
       }
@@ -117,10 +123,23 @@ import { StatusRingComponent } from '@ui/shared/status-ring.component';
       color: var(--text-2);
       margin-top: 16px;
     }
+
+    .delete-btn {
+      margin-top: 24px;
+      border-color: var(--signal);
+      color: var(--signal);
+    }
+
+    .delete-btn:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--signal) 10%, transparent);
+    }
   `,
 })
 export class TaskDetailComponent {
   private readonly getTask = inject(GetTaskByIdUseCase);
+  private readonly deleteTask = inject(DeleteTaskUseCase);
+  private readonly router = inject(Router);
+  readonly deleting = signal(false);
 
   readonly id = input.required<string>();
 
@@ -139,5 +158,16 @@ export class TaskDetailComponent {
         .then((task) => this.task.set(task))
         .catch(() => this.error.set('Tarefa não encontrada.'));
     });
+  }
+
+  async remove(): Promise<void> {
+    if (!confirm('Excluir esta tarefa?')) return;
+    this.deleting.set(true);
+    try {
+      await this.deleteTask.execute(this.id());
+      this.router.navigate(['/']);
+    } catch {
+      this.deleting.set(false);
+    }
   }
 }
