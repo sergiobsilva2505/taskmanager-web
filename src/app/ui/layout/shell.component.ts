@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router } from '@angular/router';
 import { ThemeToggleComponent } from '@ui/shared/theme-toggle.component';
+import { AuthStateService } from '@infrastructure/auth/auth-state.service';
 
 @Component({
   selector: 'app-shell',
@@ -28,6 +30,7 @@ import { ThemeToggleComponent } from '@ui/shared/theme-toggle.component';
 
         <div class="footer">
           <app-theme-toggle />
+          <button class="logout-btn" (click)="logout()">Sair</button>
         </div>
       </aside>
 
@@ -86,7 +89,25 @@ import { ThemeToggleComponent } from '@ui/shared/theme-toggle.component';
 
     .footer {
       display: flex;
-      justify-content: flex-start;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .logout-btn {
+      font-size: 13px;
+      color: var(--text-2);
+      background: none;
+      border: none;
+      padding: 6px 8px;
+      text-align: left;
+      cursor: pointer;
+      border-radius: var(--radius);
+    }
+
+    .logout-btn:hover {
+      color: var(--signal);
+      background: color-mix(in srgb, var(--signal) 8%, transparent);
+      border: none;
     }
 
     main {
@@ -94,4 +115,12 @@ import { ThemeToggleComponent } from '@ui/shared/theme-toggle.component';
     }
   `,
 })
-export class ShellComponent {}
+export class ShellComponent {
+  private readonly authState = inject(AuthStateService);
+  private readonly router = inject(Router);
+
+  logout(): void {
+    this.authState.clear();
+    this.router.navigate(['/login']);
+  }
+}
