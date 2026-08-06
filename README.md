@@ -1,59 +1,124 @@
-# TaskmanagerWeb
+# TaskManager Web
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.7.
+Frontend do TaskManager — Angular 22 com arquitetura hexagonal, consumindo a [TaskManager API](https://github.com/sergiobz/taskmanager-api).
 
-## Development server
+---
 
-To start a local development server, run:
+## 🏗️ Arquitetura
 
-```bash
-ng serve
+```
+src/app/
+├── domain/          entidades e regras puras — zero Angular
+├── application/     portas (interfaces) + casos de uso
+├── infrastructure/  adapters HTTP, interceptors, serviços de sessão
+└── ui/              componentes standalone (features + shared)
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+A regra de dependência aponta sempre para dentro: `ui` → `infrastructure` → `application` → `domain`. Essa fronteira é fiscalizada automaticamente pelo `eslint-plugin-boundaries` a cada `npm run lint` e no CI/CD.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🔐 Autenticação
 
-```bash
-ng generate component component-name
-```
+- Login com e-mail e senha
+- Login com Google (Google Identity Services)
+- Registro de conta
+- Sessão em `sessionStorage` com verificação de expiração
+- JWT anexado automaticamente via interceptor
+- Guard de rotas com redirecionamento e `returnUrl`
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## ✅ Testes
 
 ```bash
-ng build
+npm test
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+45 testes cobrindo domínio, use cases e infraestrutura de auth. Runner: Vitest 4.x.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## 🚀 Como rodar localmente
+
+**Pré-requisitos:** Node 22.12+ e a TaskManager API rodando em `http://localhost:8080`.
 
 ```bash
-ng test
+# 1. Clone o repositório
+git clone https://github.com/seu-usuario/taskmanager-web.git
+cd taskmanager-web
+
+# 2. Configure o environment
+cp src/environments/environment.example.ts src/environments/environment.ts
+# Edite environment.ts com seu Google Client ID
+
+# 3. Instale as dependências
+npm install
+
+# 4. Suba o servidor de desenvolvimento
+npm start
 ```
 
-## Running end-to-end tests
+Acesse `http://localhost:4200`.
 
-For end-to-end (e2e) testing, run:
+---
+
+## 🏗️ Build de produção
 
 ```bash
-ng e2e
+npm run build:prod
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Gera os arquivos em `dist/taskmanager-web/browser`.
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🔍 Lint
+
+```bash
+npm run lint
+```
+
+Verifica as fronteiras hexagonais e as regras do Angular ESLint. Falha se qualquer camada importar algo que não deveria.
+
+---
+
+## ⚙️ Variáveis de ambiente
+
+| Variável         | Descrição                                         |
+| ---------------- | ------------------------------------------------- |
+| `apiUrl`         | URL base da API (ex: `http://localhost:8080/api`) |
+| `googleClientId` | Client ID do OAuth Google                         |
+
+Em produção, o `GOOGLE_CLIENT_ID` é injetado via GitHub Secret antes do build — nunca entra no repositório.
+
+---
+
+## 🚢 Deploy
+
+CI/CD configurado via GitHub Actions para Azure Static Web Apps. A cada push na `main`:
+
+1. Instala dependências
+2. Roda o lint (fronteiras hexagonais)
+3. Injeta o `GOOGLE_CLIENT_ID` via secret
+4. Build de produção
+5. Deploy no Azure
+
+PRs ganham um ambiente de preview automático.
+
+**Secrets necessários no GitHub:**
+
+- `GOOGLE_CLIENT_ID`
+- `AZURE_STATIC_WEB_APPS_API_TOKEN` (gerado pelo portal do Azure)
+
+---
+
+## 🗂️ Stack
+
+| Tecnologia                        | Uso                                       |
+| --------------------------------- | ----------------------------------------- |
+| Angular 22                        | Framework — standalone, zoneless, signals |
+| Vitest 4                          | Testes unitários                          |
+| ESLint + eslint-plugin-boundaries | Lint e fronteiras hexagonais              |
+| Azure Static Web Apps             | Hosting                                   |
+| Google Identity Services          | Login social                              |
