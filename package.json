@@ -2,11 +2,11 @@
   "name": "taskmanager-web",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "build:prod": "ng build --configuration production",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "ng lint"
   },
   "private": true,
@@ -26,6 +26,7 @@
     "@angular/cli": "^22.0.7",
     "@angular/compiler-cli": "^22.0.0",
     "@eslint/js": "^10.0.1",
+    "@types/node": "^26.1.2",
     "angular-eslint": "22.1.0",
     "eslint": "^10.6.0",
     "eslint-import-resolver-typescript": "^4.4.5",
