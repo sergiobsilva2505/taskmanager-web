@@ -10,7 +10,7 @@
 ![Azure Static Web Apps](https://img.shields.io/badge/Azure_Static_Web_Apps-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)
 ![Google Identity](https://img.shields.io/badge/Google_Identity-4285F4?style=for-the-badge&logo=google&logoColor=white)
 
-*Frontend do TaskManager — Angular 22 com arquitetura hexagonal (Ports & Adapters), consumindo a [TaskManager API](https://github.com/sergiobz/taskmanager-api)*
+*Frontend do TaskManager — Angular 22 com arquitetura hexagonal (Ports & Adapters), consumindo a [TaskManager API](https://github.com/sergiobsilva2505/task-manager.git)*
 
 </div>
 
