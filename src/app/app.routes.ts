@@ -18,6 +18,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('@ui/features/tasks/task-detail.component').then((m) => m.TaskDetailComponent),
       },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('@ui/features/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      },
     ],
   },
   {

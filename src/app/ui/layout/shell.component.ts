@@ -15,8 +15,11 @@ import { AuthStateService } from '@infrastructure/auth/auth-state.service';
             <circle cx="8" cy="8" r="6" fill="none" stroke="var(--accent)" stroke-width="2.5" />
             <path
               d="M5.5 8l1.7 1.7L11 6"
-              stroke="var(--accent)" stroke-width="1.6"
-              fill="none" stroke-linecap="round" stroke-linejoin="round"
+              stroke="var(--accent)"
+              stroke-width="1.6"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             />
           </svg>
           <span>TaskManager</span>
@@ -25,6 +28,9 @@ import { AuthStateService } from '@infrastructure/auth/auth-state.service';
         <nav>
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
             Tarefas
+          </a>
+          <a routerLink="/dashboard" routerLinkActive="active">
+            Painel
           </a>
         </nav>
 
