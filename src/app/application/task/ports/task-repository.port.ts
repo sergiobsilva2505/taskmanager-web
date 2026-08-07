@@ -1,5 +1,6 @@
 import { Task } from '@domain/task/task.entity';
 import { TaskPriority, TaskStatus } from '@domain/task/task.value-objects';
+import { Dashboard } from '@domain/task/dashboard.entity';
 
 export type TaskSortField = 'TITLE' | 'CREATED_AT' | 'DUE_DATE' | 'PRIORITY';
 export type SortDirection = 'ASC' | 'DESC';
@@ -32,4 +33,6 @@ export abstract class TaskRepositoryPort {
   abstract create(input: CreateTaskInput): Promise<Task>;
   abstract changeStatus(id: string, status: TaskStatus): Promise<Task>;
   abstract delete(id: string): Promise<void>;
+  abstract getDashboard(): Promise<Dashboard>;
 }
+

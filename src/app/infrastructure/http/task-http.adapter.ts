@@ -11,7 +11,7 @@ import {
 } from '@application/task/ports/task-repository.port';
 import { AuthStateService } from '@infrastructure/auth/auth-state.service';
 import { API_BASE_URL } from './api.config';
-
+import { Dashboard } from '@domain/task/dashboard.entity';
 @Injectable({ providedIn: 'root' })
 export class TaskHttpAdapter implements TaskRepositoryPort {
   private readonly http = inject(HttpClient);
@@ -31,23 +31,17 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
     if (query.sortField) params = params.set('sortField', query.sortField);
     if (query.sortDirection) params = params.set('sortDirection', query.sortDirection);
 
-    return firstValueFrom(
-      this.http.get<PagedResult<Task>>(`${this.baseUrl}/tasks`, { params }),
-    );
+    return firstValueFrom(this.http.get<PagedResult<Task>>(`${this.baseUrl}/tasks`, { params }));
   }
 
   getById(id: string): Promise<Task> {
     const params = new HttpParams().set('currentUserId', this.userId);
-    return firstValueFrom(
-      this.http.get<Task>(`${this.baseUrl}/tasks/${id}`, { params }),
-    );
+    return firstValueFrom(this.http.get<Task>(`${this.baseUrl}/tasks/${id}`, { params }));
   }
 
   create(input: CreateTaskInput): Promise<Task> {
     const params = new HttpParams().set('currentUserId', this.userId);
-    return firstValueFrom(
-      this.http.post<Task>(`${this.baseUrl}/tasks`, input, { params }),
-    );
+    return firstValueFrom(this.http.post<Task>(`${this.baseUrl}/tasks`, input, { params }));
   }
 
   changeStatus(id: string, status: TaskStatus): Promise<Task> {
@@ -59,8 +53,11 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
 
   delete(id: string): Promise<void> {
     const params = new HttpParams().set('currentUserId', this.userId);
-    return firstValueFrom(
-      this.http.delete<void>(`${this.baseUrl}/tasks/${id}`, { params }),
-    );
+    return firstValueFrom(this.http.delete<void>(`${this.baseUrl}/tasks/${id}`, { params }));
+  }
+
+  getDashboard(): Promise<Dashboard> {
+    const params = new HttpParams().set('currentUserId', this.userId);
+    return firstValueFrom(this.http.get<Dashboard>(`${this.baseUrl}/tasks/dashboard`, { params }));
   }
 }
