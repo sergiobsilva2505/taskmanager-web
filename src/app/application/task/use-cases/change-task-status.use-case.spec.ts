@@ -28,6 +28,14 @@ function makeUseCase() {
       return Promise.resolve({ ...mockTask, status });
     },
     delete: () => Promise.resolve(),
+    getDashboard: () =>
+      Promise.resolve({
+        totalTasks: 0,
+        countByStatus: {},
+        countByPriority: {},
+        overdueCount: 0,
+        dueSoonCount: 0,
+      }),
   } as TaskRepositoryPort;
 
   const injector = Injector.create({
