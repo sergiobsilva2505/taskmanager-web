@@ -1,6 +1,18 @@
 # TaskManager Web
 
-Frontend do TaskManager — Angular 22 com arquitetura hexagonal, consumindo a [TaskManager API](https://github.com/sergiobz/taskmanager-api).
+<div align="center">
+
+![Angular](https://img.shields.io/badge/Angular-22-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![RxJS](https://img.shields.io/badge/RxJS-7.8-B7178C?style=for-the-badge&logo=reactivex&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-4-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
+![Azure Static Web Apps](https://img.shields.io/badge/Azure_Static_Web_Apps-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white)
+![Google Identity](https://img.shields.io/badge/Google_Identity-4285F4?style=for-the-badge&logo=google&logoColor=white)
+
+*Frontend do TaskManager — Angular 22 com arquitetura hexagonal (Ports & Adapters), consumindo a [TaskManager API](https://github.com/sergiobz/taskmanager-api)*
+
+</div>
 
 ---
 
@@ -18,7 +30,9 @@ A regra de dependência aponta sempre para dentro: `ui` → `infrastructure` →
 
 ---
 
-## 🔐 Autenticação
+## ✨ Funcionalidades
+
+### Autenticação
 
 - Login com e-mail e senha
 - Login com Google (Google Identity Services)
@@ -26,6 +40,27 @@ A regra de dependência aponta sempre para dentro: `ui` → `infrastructure` →
 - Sessão em `sessionStorage` com verificação de expiração
 - JWT anexado automaticamente via interceptor
 - Guard de rotas com redirecionamento e `returnUrl`
+
+### Tarefas
+
+- Listagem paginada, com criação inline e avanço de status por um clique (anel de progresso)
+- Detalhe de tarefa (`/tasks/:id`)
+- Alteração de status e exclusão
+
+### Dashboard
+
+- Totais, tarefas atrasadas e tarefas a vencer em breve
+- Distribuição por status e por prioridade
+
+### Rotas
+
+| Caminho      | Componente            | Guard       |
+| ------------ | --------------------- | ----------- |
+| `/`          | `TaskListComponent`   | `authGuard` |
+| `/tasks/:id` | `TaskDetailComponent` | `authGuard` |
+| `/dashboard` | `DashboardComponent`  | `authGuard` |
+| `/login`     | `LoginComponent`      | —           |
+| `/register`  | `RegisterComponent`   | —           |
 
 ---
 
@@ -35,7 +70,7 @@ A regra de dependência aponta sempre para dentro: `ui` → `infrastructure` →
 npm test
 ```
 
-45 testes cobrindo domínio, use cases e infraestrutura de auth. Runner: Vitest 4.x.
+48 testes (13 arquivos) cobrindo domínio, use cases de auth e task (incluindo dashboard) e infraestrutura de auth. Runner: Vitest 4.x.
 
 ---
 
@@ -96,17 +131,17 @@ Em produção, o `GOOGLE_CLIENT_ID` é injetado via GitHub Secret antes do build
 
 ## 🚢 Deploy
 
-CI/CD configurado via GitHub Actions para Azure Static Web Apps. A cada push na `main`:
+CI/CD configurado via GitHub Actions para Azure Static Web Apps. A cada push na `main` ou PR:
 
 1. Instala dependências
 2. Roda o lint (fronteiras hexagonais)
 3. Injeta o `GOOGLE_CLIENT_ID` via secret
 4. Build de produção
-5. Deploy no Azure
+5. ~~Deploy no Azure~~ — **pausado no momento** (`if: false` no step `Deploy` e no job `close_pull_request`); o workflow segue validando lint + build a cada push, sem publicar.
 
-PRs ganham um ambiente de preview automático.
+Quando o deploy for retomado, PRs voltam a ganhar um ambiente de preview automático.
 
-**Secrets necessários no GitHub:**
+**Secrets necessários no GitHub (quando o deploy for reativado):**
 
 - `GOOGLE_CLIENT_ID`
 - `AZURE_STATIC_WEB_APPS_API_TOKEN` (gerado pelo portal do Azure)
