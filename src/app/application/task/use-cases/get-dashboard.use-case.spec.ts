@@ -1,8 +1,18 @@
 import { describe, it, expect } from 'vitest';
 import { Injector } from '@angular/core';
 import { Dashboard } from '@domain/task/dashboard.entity';
+import { Task } from '@domain/task/task.entity';
 import { GetDashboardUseCase } from './get-dashboard.use-case';
 import { TaskRepositoryPort } from '../ports/task-repository.port';
+
+const mockTask: Task = {
+  id: 'task-1',
+  title: 'Tarefa mock',
+  status: 'TODO',
+  priority: 'MEDIUM',
+  createdAt: '2026-01-01T00:00:00Z',
+  updatedAt: '2026-01-01T00:00:00Z',
+};
 
 const mockDashboard: Dashboard = {
   totalTasks: 10,
@@ -25,9 +35,9 @@ function makeUseCase() {
   const fakeRepo: TaskRepositoryPort = {
     list: () =>
       Promise.resolve({ content: [], page: 0, size: 10, totalElements: 0, totalPages: 0 }),
-    getById: () => Promise.resolve({} as any),
-    create: () => Promise.resolve({} as any),
-    changeStatus: () => Promise.resolve({} as any),
+    getById: () => Promise.resolve(mockTask),
+    create: () => Promise.resolve(mockTask),
+    changeStatus: () => Promise.resolve(mockTask),
     delete: () => Promise.resolve(),
     getDashboard: () => Promise.resolve(mockDashboard),
   } as TaskRepositoryPort;

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { Injector } from '@angular/core';
 import { AuthSession } from '@domain/user/auth-session';
 import { LoginUseCase } from './login.use-case';
-import { AuthRepositoryPort, LoginInput, RegisterInput } from '../ports/auth-repository.port';
+import { AuthRepositoryPort, LoginInput } from '../ports/auth-repository.port';
 import { User } from '@domain/user/user.entity';
 
 const mockSession: AuthSession = {

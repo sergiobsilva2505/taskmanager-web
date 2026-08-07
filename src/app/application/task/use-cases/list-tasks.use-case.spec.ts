@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { runInInjectionContext, Injector } from '@angular/core';
+import { Injector } from '@angular/core';
 import { Task } from '@domain/task/task.entity';
 import { ListTasksUseCase } from './list-tasks.use-case';
-import { TaskRepositoryPort, ListTasksQuery, PagedResult } from '../ports/task-repository.port';
+import { TaskRepositoryPort, ListTasksQuery } from '../ports/task-repository.port';
 
 const mockTask: Task = {
   id: '1',

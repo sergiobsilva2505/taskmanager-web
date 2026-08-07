@@ -6,6 +6,18 @@ import { GoogleLoginUseCase } from '@application/auth/use-cases/google-login.use
 import { AuthStateService } from '@infrastructure/auth/auth-state.service';
 import { environment } from '@env/environment';
 
+interface GoogleIdentityServices {
+  accounts: {
+    id: {
+      initialize: (config: {
+        client_id: string;
+        callback: (response: { credential: string }) => void;
+      }) => void;
+      renderButton: (parent: HTMLElement | null, options: Record<string, unknown>) => void;
+    };
+  };
+}
+
 @Component({
   selector: 'app-login',
   imports: [FormsModule, RouterLink],
@@ -235,7 +247,7 @@ export class LoginComponent implements OnInit {
 
   private initGoogleButton(): void {
     const waitForGoogle = setInterval(() => {
-      const google = (window as any).google;
+      const google = (window as unknown as { google?: GoogleIdentityServices }).google;
       if (!google) return;
       clearInterval(waitForGoogle);
 

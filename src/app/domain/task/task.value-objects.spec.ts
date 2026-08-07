@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  statusProgress,
-  nextStatus,
-  TaskStatus,
-} from './task.value-objects';
+import { statusProgress, nextStatus } from './task.value-objects';
 
 describe('statusProgress', () => {
   it('retorna 0 para TODO', () => {

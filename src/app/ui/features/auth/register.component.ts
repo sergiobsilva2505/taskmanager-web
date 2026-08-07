@@ -224,15 +224,15 @@ export class RegisterComponent {
       });
       this.success.set(true);
       setTimeout(() => this.router.navigate(['/login']), 1500);
-    } catch (err: any) {
+    } catch (err) {
       this.error.set(this.parseError(err));
     } finally {
       this.loading.set(false);
     }
   }
 
-  private parseError(err: any): string {
-    const status = err?.status;
+  private parseError(err: unknown): string {
+    const status = (err as { status?: number } | null)?.status;
     if (status === 409) return 'Este e-mail já está cadastrado.';
     if (status === 400) return 'Verifique os dados informados e tente novamente.';
     return 'Não foi possível criar a conta. Tente novamente.';
