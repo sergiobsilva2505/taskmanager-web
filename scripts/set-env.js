@@ -10,4 +10,4 @@ content = content.replace('%%GOOGLE_CLIENT_ID%%', googleClientId);
 
 fs.writeFileSync(envFilePath, content);
 console.log('✅ Environment variables injected successfully.');
- 
+
