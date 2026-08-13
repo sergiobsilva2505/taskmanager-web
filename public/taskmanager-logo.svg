@@ -1,0 +1,14 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fundo -->
+  <rect width="100" height="100" rx="22" fill="#4F5DFF"/>
+  <!-- Anel externo (track) -->
+  <circle cx="50" cy="50" r="28" fill="none" stroke="white" stroke-width="7" stroke-opacity="0.3"/>
+  <!-- Anel preenchido (DONE) -->
+  <circle cx="50" cy="50" r="28" fill="none" stroke="white" stroke-width="7"
+    stroke-dasharray="175.9" stroke-dashoffset="0"
+    stroke-linecap="round" transform="rotate(-90 50 50)"/>
+  <!-- Check -->
+  <path d="M35 50.5l10 10L66 37"
+    fill="none" stroke="white" stroke-width="7"
+    stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
