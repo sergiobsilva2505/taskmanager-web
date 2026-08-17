@@ -22,6 +22,14 @@ function makeUseCase() {
     create: (input) => { lastInput = input; return Promise.resolve(mockTask); },
     changeStatus: () => Promise.resolve(mockTask),
     delete: () => Promise.resolve(),
+    getDashboard: () =>
+      Promise.resolve({
+        totalTasks: 0,
+        countByStatus: {},
+        countByPriority: {},
+        overdueCount: 0,
+        dueSoonCount: 0,
+      }),
   } as TaskRepositoryPort;
 
   const injector = Injector.create({

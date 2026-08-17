@@ -5,8 +5,8 @@
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "node scripts/set-env.js && ng build --configuration production",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "ng test --watch=false",
+    "test:watch": "ng test",
     "lint": "ng lint"
   },
   "private": true,

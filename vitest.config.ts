@@ -4,6 +4,13 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
+// NOTA: a cobertura de testes deste projeto NÃO é gerada rodando `npx vitest run --coverage`
+// diretamente. Componentes com inputs baseados em signal (input()/input.required()) exigem a
+// compilação AOT feita pelo builder do Angular CLI para que setInput() funcione nos testes.
+// Use sempre: `npm test` (ng test --watch=false) para rodar a suíte,
+// e `npx ng test --watch=false --coverage --coverage-reporters=lcov` para gerar cobertura
+// (o relatório lcov.info sai em coverage/taskmanager-web/lcov.info).
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -20,17 +27,5 @@ export default defineConfig({
     setupFiles: ['src/test-setup.ts'],
     include: ['src/**/*.spec.ts'],
     passWithNoTests: true,
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'lcov'],
-      reportsDirectory: './coverage',
-      exclude: [
-        'node_modules/',
-        'src/environments/',
-        'src/main.ts',
-        'src/test-setup.ts',
-        '**/*.spec.ts',
-      ],
-    },
   },
 });

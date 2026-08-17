@@ -5,7 +5,6 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
 concurrency:
   group: ci-frontend-${{ github.ref }}
@@ -54,7 +53,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Rodar testes com cobertura
-        run: npx --no-install vitest run --coverage
+        run: npx --no-install ng test --watch=false --coverage --coverage-reporters=lcov
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
