@@ -1,6 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { TaskStatus } from '@domain/task/task.value-objects';
-import { statusProgress } from '@domain/task/task.value-objects';
+import { TaskStatus, statusProgress } from '@domain/task/task.value-objects';
 
 const RADIUS = 7;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;

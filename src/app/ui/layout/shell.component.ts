@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeToggleComponent } from '@ui/shared/theme-toggle.component';
 import { AuthStateService } from '@infrastructure/auth/auth-state.service';
 
