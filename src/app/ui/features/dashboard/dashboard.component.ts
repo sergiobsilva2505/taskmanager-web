@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Dashboard } from '@domain/task/dashboard.entity';
 import { GetDashboardUseCase } from '@application/task/use-cases/get-dashboard.use-case';
 
@@ -184,13 +184,17 @@ import { GetDashboardUseCase } from '@application/task/use-cases/get-dashboard.u
     }
   `,
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private readonly getDashboard = inject(GetDashboardUseCase);
 
   readonly data = signal<Dashboard | null>(null);
   readonly error = signal<string | null>(null);
 
-  constructor() {
+  ngOnInit(): void {
+    this.loadDashboard();
+  }
+
+  private loadDashboard(): void {
     this.getDashboard
       .execute()
       .then((d) => this.data.set(d))

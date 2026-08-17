@@ -1,11 +1,10 @@
 import { Component, inject, input, signal, effect } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { Task } from '@domain/task/task.entity';
-import { isOverdue } from '@domain/task/task.entity';
+import { Router, RouterLink } from '@angular/router';
+
+import { Task, isOverdue } from '@domain/task/task.entity';
 import { GetTaskByIdUseCase } from '@application/task/use-cases/get-task-by-id.use-case';
 import { StatusRingComponent } from '@ui/shared/status-ring.component';
-import { Router } from '@angular/router';
 import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-case';
 
 @Component({
@@ -14,7 +13,6 @@ import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-c
   template: `
     <div class="container">
       <a routerLink="/">← Voltar</a>
-
       @if (error()) {
         <p class="error">{{ error() }}</p>
       } @else if (task(); as t) {
@@ -22,15 +20,12 @@ import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-c
           <app-status-ring [status]="t.status" />
           <h1>{{ t.title }}</h1>
         </header>
-
         @if (t.description) {
           <p class="description">{{ t.description }}</p>
         }
-
         <dl>
           <dt>Prioridade</dt>
           <dd>{{ t.priority }}</dd>
-
           @if (t.dueDate) {
             <dt>Prazo</dt>
             <dd [class.overdue]="overdue(t)">
@@ -40,14 +35,11 @@ import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-c
               }
             </dd>
           }
-
           <dt>Criada em</dt>
           <dd>{{ t.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
-
           <dt>Atualizada em</dt>
           <dd>{{ t.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
         </dl>
-
         <button class="delete-btn" (click)="remove()" [disabled]="deleting()">
           {{ deleting() ? 'Excluindo…' : 'Excluir tarefa' }}
         </button>
@@ -61,35 +53,29 @@ import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-c
       max-width: 640px;
       padding: 32px 24px;
     }
-
     a {
       color: var(--text-2);
       text-decoration: none;
       font-size: 13px;
     }
-
     a:hover {
       color: var(--accent);
     }
-
     header {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-top: 16px;
     }
-
     h1 {
       margin: 0;
       font-size: 22px;
       font-weight: 600;
     }
-
     .description {
       color: var(--text-2);
       margin-top: 8px;
     }
-
     dl {
       display: grid;
       grid-template-columns: max-content 1fr;
@@ -98,38 +84,31 @@ import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-c
       padding-top: 16px;
       border-top: 0.5px solid var(--border);
     }
-
     dt {
       color: var(--text-2);
       font-size: 13px;
     }
-
     dd {
       margin: 0;
       font-family: var(--font-mono);
       font-size: 12px;
     }
-
     dd.overdue {
       color: var(--signal);
     }
-
     .error {
       color: var(--signal);
       margin-top: 16px;
     }
-
     .loading {
       color: var(--text-2);
       margin-top: 16px;
     }
-
     .delete-btn {
       margin-top: 24px;
       border-color: var(--signal);
       color: var(--signal);
     }
-
     .delete-btn:hover:not(:disabled) {
       background: color-mix(in srgb, var(--signal) 10%, transparent);
     }
@@ -140,12 +119,9 @@ export class TaskDetailComponent {
   private readonly deleteTask = inject(DeleteTaskUseCase);
   private readonly router = inject(Router);
   readonly deleting = signal(false);
-
   readonly id = input.required<string>();
-
   readonly task = signal<Task | null>(null);
   readonly error = signal<string | null>(null);
-
   protected readonly overdue = isOverdue;
 
   constructor() {
