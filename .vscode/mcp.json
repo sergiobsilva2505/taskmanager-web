@@ -1,0 +1,27 @@
+{
+  "servers": {
+    "sonarqube": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "SONARQUBE_TOKEN",
+        "-e",
+        "SONARQUBE_ORG",
+        "-e",
+        "SONARQUBE_CLOUD_URL",
+        "-e",
+        "SONARQUBE_IDE_PORT",
+        "mcp/sonarqube"
+      ],
+      "envFile": "${workspaceFolder}/.env.mcp",
+      "env": {
+        "SONARQUBE_ORG": "sergiobsilva2505",
+        "SONARQUBE_CLOUD_URL": "https://sonarcloud.io",
+        "SONARQUBE_IDE_PORT": "64121"
+      }
+    }
+  }
+}
