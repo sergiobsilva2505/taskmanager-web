@@ -44,7 +44,7 @@ describe('ShellComponent', () => {
   it('renderiza os links de navegação', () => {
     const fixture = createComponent();
     const links: NodeListOf<HTMLAnchorElement> = fixture.nativeElement.querySelectorAll('nav a');
-    expect(links.length).toBe(2);
+    expect(links).toHaveLength(2);
     expect(links[0].textContent).toContain('Tarefas');
     expect(links[1].textContent).toContain('Painel');
   });
