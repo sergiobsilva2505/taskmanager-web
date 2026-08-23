@@ -4,8 +4,10 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { TaskRepositoryPort } from '@application/task/ports/task-repository.port';
 import { AuthRepositoryPort } from '@application/auth/ports/auth-repository.port';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 import { TaskHttpAdapter } from '@infrastructure/http/task-http.adapter';
 import { AuthHttpAdapter } from '@infrastructure/http/auth-http.adapter';
+import { ConsoleLoggerAdapter } from '@infrastructure/logging/console-logger.adapter';
 import { jwtInterceptor } from '@infrastructure/interceptors/jwt.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -15,5 +17,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([jwtInterceptor])),
     { provide: TaskRepositoryPort, useClass: TaskHttpAdapter },
     { provide: AuthRepositoryPort, useClass: AuthHttpAdapter },
+    { provide: LoggerPort, useClass: ConsoleLoggerAdapter },
   ],
 };

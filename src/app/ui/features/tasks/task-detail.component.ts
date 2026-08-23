@@ -6,6 +6,7 @@ import { Task, isOverdue } from '@domain/task/task.entity';
 import { GetTaskByIdUseCase } from '@application/task/use-cases/get-task-by-id.use-case';
 import { StatusRingComponent } from '@ui/shared/status-ring.component';
 import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 
 @Component({
   selector: 'app-task-detail',
@@ -117,6 +118,7 @@ import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-c
 export class TaskDetailComponent {
   private readonly getTask = inject(GetTaskByIdUseCase);
   private readonly deleteTask = inject(DeleteTaskUseCase);
+  private readonly logger = inject(LoggerPort);
   private readonly router = inject(Router);
   readonly deleting = signal(false);
   readonly id = input.required<string>();
@@ -132,7 +134,10 @@ export class TaskDetailComponent {
       this.getTask
         .execute(taskId)
         .then((task) => this.task.set(task))
-        .catch(() => this.error.set('Tarefa não encontrada.'));
+        .catch((err) => {
+          this.logger.error('Falha ao carregar tarefa', err, { taskId });
+          this.error.set('Tarefa não encontrada.');
+        });
     });
   }
 
@@ -142,7 +147,8 @@ export class TaskDetailComponent {
     try {
       await this.deleteTask.execute(this.id());
       this.router.navigate(['/']);
-    } catch {
+    } catch (err) {
+      this.logger.error('Falha ao excluir tarefa', err, { taskId: this.id() });
       this.deleting.set(false);
     }
   }

@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { RegisterUseCase } from '@application/auth/use-cases/register.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 
 @Component({
   selector: 'app-register',
@@ -200,6 +201,7 @@ import { RegisterUseCase } from '@application/auth/use-cases/register.use-case';
 })
 export class RegisterComponent {
   private readonly registerUseCase = inject(RegisterUseCase);
+  private readonly logger = inject(LoggerPort);
   private readonly router = inject(Router);
 
   name = '';
@@ -225,6 +227,7 @@ export class RegisterComponent {
       this.success.set(true);
       setTimeout(() => this.router.navigate(['/login']), 1500);
     } catch (err) {
+      this.logger.error('Falha ao registrar usuário', err, { email: this.email });
       this.error.set(this.parseError(err));
     } finally {
       this.loading.set(false);

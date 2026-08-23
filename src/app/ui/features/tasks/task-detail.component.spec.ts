@@ -5,6 +5,7 @@ import { provideRouter, Router } from '@angular/router';
 import { Task } from '@domain/task/task.entity';
 import { GetTaskByIdUseCase } from '@application/task/use-cases/get-task-by-id.use-case';
 import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 import { TaskDetailComponent } from './task-detail.component';
 
 function flushMacrotask(): Promise<void> {
@@ -37,6 +38,7 @@ describe('TaskDetailComponent', () => {
         provideRouter([]),
         { provide: GetTaskByIdUseCase, useValue: { execute: getTaskExecute } },
         { provide: DeleteTaskUseCase, useValue: { execute: deleteTaskExecute } },
+        { provide: LoggerPort, useValue: { info: vi.fn(), error: vi.fn() } },
       ],
     });
   });

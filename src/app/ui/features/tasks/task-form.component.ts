@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Task } from '@domain/task/task.entity';
 import { TaskPriority } from '@domain/task/task.value-objects';
 import { CreateTaskUseCase } from '@application/task/use-cases/create-task.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 
 @Component({
   selector: 'app-task-form',
@@ -47,6 +48,7 @@ import { CreateTaskUseCase } from '@application/task/use-cases/create-task.use-c
 })
 export class TaskFormComponent {
   private readonly createTask = inject(CreateTaskUseCase);
+  private readonly logger = inject(LoggerPort);
 
   title = '';
   description = '';
@@ -76,7 +78,8 @@ export class TaskFormComponent {
       this.description = '';
       this.priority = 'MEDIUM';
       this.dueDate = '';
-    } catch {
+    } catch (err) {
+      this.logger.error('Falha ao criar tarefa', err, { title: this.title });
       this.error.set('Não foi possível criar a tarefa.');
     } finally {
       this.saving.set(false);

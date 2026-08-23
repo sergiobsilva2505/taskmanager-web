@@ -4,6 +4,7 @@ import { Task } from '@domain/task/task.entity';
 import { nextStatus } from '@domain/task/task.value-objects';
 import { ListTasksUseCase } from '@application/task/use-cases/list-tasks.use-case';
 import { ChangeTaskStatusUseCase } from '@application/task/use-cases/change-task-status.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 import { StatusRingComponent } from '@ui/shared/status-ring.component';
 import { TaskFormComponent } from './task-form.component';
 
@@ -127,6 +128,7 @@ const PAGE_SIZE = 10;
 export class TaskListComponent {
   private readonly listTasks = inject(ListTasksUseCase);
   private readonly changeStatus = inject(ChangeTaskStatusUseCase);
+  private readonly logger = inject(LoggerPort);
 
   readonly tasks = signal<Task[]>([]);
   readonly page = signal(0);
@@ -170,6 +172,9 @@ export class TaskListComponent {
         this.tasks.set(result.content);
         this.totalPages.set(result.totalPages);
       })
-      .catch(() => this.error.set('Não foi possível carregar as tarefas. A API está rodando?'));
+      .catch((err) => {
+        this.logger.error('Falha ao carregar lista de tarefas', err, { page: this.page() });
+        this.error.set('Não foi possível carregar as tarefas. A API está rodando?');
+      });
   }
 }
