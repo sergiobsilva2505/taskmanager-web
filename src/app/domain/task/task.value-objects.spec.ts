@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { statusProgress, nextStatus } from './task.value-objects';
+import { statusProgress, canAdvance, nextStatus } from './task.value-objects';
 
 describe('statusProgress', () => {
   it('retorna 0 para TODO', () => {
@@ -19,6 +19,24 @@ describe('statusProgress', () => {
   });
 });
 
+describe('canAdvance', () => {
+  it('TODO pode avançar', () => {
+    expect(canAdvance('TODO')).toBe(true);
+  });
+
+  it('IN_PROGRESS pode avançar', () => {
+    expect(canAdvance('IN_PROGRESS')).toBe(true);
+  });
+
+  it('DONE não pode avançar', () => {
+    expect(canAdvance('DONE')).toBe(false);
+  });
+
+  it('CANCELLED não pode avançar', () => {
+    expect(canAdvance('CANCELLED')).toBe(false);
+  });
+});
+
 describe('nextStatus', () => {
   it('TODO avança para IN_PROGRESS', () => {
     expect(nextStatus('TODO')).toBe('IN_PROGRESS');
@@ -28,11 +46,11 @@ describe('nextStatus', () => {
     expect(nextStatus('IN_PROGRESS')).toBe('DONE');
   });
 
-  it('DONE não tem próximo status', () => {
-    expect(nextStatus('DONE')).toBeNull();
+  it('lança erro ao pedir o próximo status de uma tarefa DONE', () => {
+    expect(() => nextStatus('DONE')).toThrow();
   });
 
-  it('CANCELLED não tem próximo status', () => {
-    expect(nextStatus('CANCELLED')).toBeNull();
+  it('lança erro ao pedir o próximo status de uma tarefa CANCELLED', () => {
+    expect(() => nextStatus('CANCELLED')).toThrow();
   });
 });
