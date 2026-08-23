@@ -235,6 +235,7 @@ export class RegisterComponent {
   }
 
   private parseError(err: unknown): string {
+    if (err instanceof Error) return err.message;
     const status = (err as { status?: number } | null)?.status;
     if (status === 409) return 'Este e-mail já está cadastrado.';
     if (status === 400) return 'Verifique os dados informados e tente novamente.';

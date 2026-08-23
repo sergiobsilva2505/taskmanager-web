@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Task } from '@domain/task/task.entity';
-import { canAdvance, nextStatus } from '@domain/task/task.value-objects';
 import { ListTasksUseCase } from '@application/task/use-cases/list-tasks.use-case';
 import { ChangeTaskStatusUseCase } from '@application/task/use-cases/change-task-status.use-case';
 import { LoggerPort } from '@application/shared/ports/logger.port';
@@ -29,7 +28,7 @@ const PAGE_SIZE = 10;
             <button
               class="ring-btn"
               (click)="advanceStatus(task, $event)"
-              [disabled]="!canAdvance(task.status)"
+              [disabled]="!task.canAdvance()"
               [attr.aria-label]="'Avançar status de ' + task.title"
             >
               <app-status-ring [status]="task.status" />
@@ -135,8 +134,6 @@ export class TaskListComponent {
   readonly totalPages = signal(0);
   readonly error = signal<string | null>(null);
 
-  protected readonly canAdvance = canAdvance;
-
   constructor() {
     this.load();
   }
@@ -153,8 +150,8 @@ export class TaskListComponent {
 
   async advanceStatus(task: Task, event: Event): Promise<void> {
     event.preventDefault();
-    if (!canAdvance(task.status)) return;
-    const updated = await this.changeStatus.execute(task.id, nextStatus(task.status));
+    if (!task.canAdvance()) return;
+    const updated = await this.changeStatus.execute(task.id, task.nextStatus());
     this.tasks.update((list) => list.map((t) => (t.id === updated.id ? updated : t)));
   }
 

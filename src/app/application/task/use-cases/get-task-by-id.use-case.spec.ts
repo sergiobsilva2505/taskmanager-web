@@ -4,14 +4,14 @@ import { Task } from '@domain/task/task.entity';
 import { GetTaskByIdUseCase } from './get-task-by-id.use-case';
 import { TaskRepositoryPort } from '../ports/task-repository.port';
 
-const mockTask: Task = {
+const mockTask = new Task({
   id: 'task-123',
   title: 'Tarefa por ID',
   status: 'TODO',
   priority: 'LOW',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
-};
+});
 
 function makeUseCase() {
   let lastId: string | null = null;

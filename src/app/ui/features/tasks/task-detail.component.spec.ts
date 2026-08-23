@@ -12,7 +12,7 @@ function flushMacrotask(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-const mockTask: Task = {
+const mockTask = new Task({
   id: 'task-1',
   title: 'Revisar PR',
   description: 'Conferir os testes novos',
@@ -20,7 +20,7 @@ const mockTask: Task = {
   priority: 'HIGH',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-02T00:00:00Z',
-};
+});
 
 describe('TaskDetailComponent', () => {
   let getTaskExecute: ReturnType<typeof vi.fn>;

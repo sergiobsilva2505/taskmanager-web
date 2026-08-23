@@ -12,11 +12,11 @@ const mockUser: User = {
   createdAt: '2026-01-01T00:00:00Z',
 };
 
-const mockSession: AuthSession = {
+const mockSession = new AuthSession({
   token: 'fake-token',
   userId: 'user-1',
   expiresAt: '2099-01-01T00:00:00Z',
-};
+});
 
 function makeUseCase() {
   let lastInput: RegisterInput | null = null;
@@ -69,5 +69,26 @@ describe('RegisterUseCase', () => {
     });
     expect(result).toHaveProperty('name');
     expect(result).not.toHaveProperty('token');
+  });
+
+  it('rejeita nome vazio', async () => {
+    const { useCase } = makeUseCase();
+    await expect(
+      useCase.execute({ name: '   ', email: 'sergio@email.com', password: 'Senha@123' }),
+    ).rejects.toThrow();
+  });
+
+  it('rejeita e-mail com formato inválido', async () => {
+    const { useCase } = makeUseCase();
+    await expect(
+      useCase.execute({ name: 'Sergio', email: 'nao-e-um-email', password: 'Senha@123' }),
+    ).rejects.toThrow();
+  });
+
+  it('rejeita senha que não cumpre os requisitos mínimos', async () => {
+    const { useCase } = makeUseCase();
+    await expect(
+      useCase.execute({ name: 'Sergio', email: 'sergio@email.com', password: 'fraca' }),
+    ).rejects.toThrow();
   });
 });

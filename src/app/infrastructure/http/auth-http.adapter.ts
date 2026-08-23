@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { User } from '@domain/user/user.entity';
-import { AuthSession } from '@domain/user/auth-session';
+import { AuthSession, AuthSessionProps } from '@domain/user/auth-session';
 import {
   AuthRepositoryPort,
   LoginInput,
@@ -20,9 +20,10 @@ export class AuthHttpAdapter implements AuthRepositoryPort {
   async login(input: LoginInput): Promise<AuthSession> {
     this.logger.info('Autenticando usuário', { email: input.email });
     try {
-      const session = await firstValueFrom(
-        this.http.post<AuthSession>(`${this.baseUrl}/auth/login`, input),
+      const dto = await firstValueFrom(
+        this.http.post<AuthSessionProps>(`${this.baseUrl}/auth/login`, input),
       );
+      const session = new AuthSession(dto);
       this.logger.info('Usuário autenticado', { userId: session.userId });
       return session;
     } catch (error) {
@@ -34,9 +35,10 @@ export class AuthHttpAdapter implements AuthRepositoryPort {
   async googleLogin(idToken: string): Promise<AuthSession> {
     this.logger.info('Autenticando usuário via Google');
     try {
-      const session = await firstValueFrom(
-        this.http.post<AuthSession>(`${this.baseUrl}/auth/google`, { idToken }),
+      const dto = await firstValueFrom(
+        this.http.post<AuthSessionProps>(`${this.baseUrl}/auth/google`, { idToken }),
       );
+      const session = new AuthSession(dto);
       this.logger.info('Usuário autenticado via Google', { userId: session.userId });
       return session;
     } catch (error) {

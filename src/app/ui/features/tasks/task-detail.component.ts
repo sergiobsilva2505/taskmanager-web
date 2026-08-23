@@ -2,7 +2,7 @@ import { Component, inject, input, signal, effect } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
-import { Task, isOverdue } from '@domain/task/task.entity';
+import { Task } from '@domain/task/task.entity';
 import { GetTaskByIdUseCase } from '@application/task/use-cases/get-task-by-id.use-case';
 import { StatusRingComponent } from '@ui/shared/status-ring.component';
 import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-case';
@@ -29,9 +29,9 @@ import { LoggerPort } from '@application/shared/ports/logger.port';
           <dd>{{ t.priority }}</dd>
           @if (t.dueDate) {
             <dt>Prazo</dt>
-            <dd [class.overdue]="overdue(t)">
+            <dd [class.overdue]="t.isOverdue()">
               {{ t.dueDate | date: 'dd/MM/yyyy HH:mm' }}
-              @if (overdue(t)) {
+              @if (t.isOverdue()) {
                 <span> · atrasada</span>
               }
             </dd>
@@ -124,7 +124,6 @@ export class TaskDetailComponent {
   readonly id = input.required<string>();
   readonly task = signal<Task | null>(null);
   readonly error = signal<string | null>(null);
-  protected readonly overdue = isOverdue;
 
   constructor() {
     effect(() => {

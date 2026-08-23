@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { Task } from '@domain/task/task.entity';
+import { Task, TaskProps } from '@domain/task/task.entity';
 import { TaskStatus } from '@domain/task/task.value-objects';
 import {
   CreateTaskInput,
@@ -35,9 +35,13 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
     if (query.sortDirection) params = params.set('sortDirection', query.sortDirection);
 
     try {
-      const result = await firstValueFrom(
-        this.http.get<PagedResult<Task>>(`${this.baseUrl}/tasks`, { params }),
+      const page = await firstValueFrom(
+        this.http.get<PagedResult<TaskProps>>(`${this.baseUrl}/tasks`, { params }),
       );
+      const result: PagedResult<Task> = {
+        ...page,
+        content: page.content.map((dto) => new Task(dto)),
+      };
       this.logger.info('Tarefas listadas', { totalElements: result.totalElements });
       return result;
     } catch (error) {
@@ -50,9 +54,11 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
     this.logger.info('Buscando tarefa por id', { id });
     const params = new HttpParams().set('currentUserId', this.userId);
     try {
-      const task = await firstValueFrom(this.http.get<Task>(`${this.baseUrl}/tasks/${id}`, { params }));
+      const dto = await firstValueFrom(
+        this.http.get<TaskProps>(`${this.baseUrl}/tasks/${id}`, { params }),
+      );
       this.logger.info('Tarefa encontrada', { id });
-      return task;
+      return new Task(dto);
     } catch (error) {
       this.logger.error('Falha ao buscar tarefa', error, { id });
       throw error;
@@ -63,9 +69,10 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
     this.logger.info('Criando tarefa', { input });
     const params = new HttpParams().set('currentUserId', this.userId);
     try {
-      const task = await firstValueFrom(
-        this.http.post<Task>(`${this.baseUrl}/tasks`, input, { params }),
+      const dto = await firstValueFrom(
+        this.http.post<TaskProps>(`${this.baseUrl}/tasks`, input, { params }),
       );
+      const task = new Task(dto);
       this.logger.info('Tarefa criada', { id: task.id });
       return task;
     } catch (error) {
@@ -78,11 +85,11 @@ export class TaskHttpAdapter implements TaskRepositoryPort {
     this.logger.info('Alterando status da tarefa', { id, status });
     const params = new HttpParams().set('currentUserId', this.userId);
     try {
-      const task = await firstValueFrom(
-        this.http.patch<Task>(`${this.baseUrl}/tasks/${id}/status`, { status }, { params }),
+      const dto = await firstValueFrom(
+        this.http.patch<TaskProps>(`${this.baseUrl}/tasks/${id}/status`, { status }, { params }),
       );
       this.logger.info('Status da tarefa alterado', { id, status });
-      return task;
+      return new Task(dto);
     } catch (error) {
       this.logger.error('Falha ao alterar status da tarefa', error, { id, status });
       throw error;

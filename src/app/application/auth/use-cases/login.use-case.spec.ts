@@ -5,11 +5,11 @@ import { LoginUseCase } from './login.use-case';
 import { AuthRepositoryPort, LoginInput } from '../ports/auth-repository.port';
 import { User } from '@domain/user/user.entity';
 
-const mockSession: AuthSession = {
+const mockSession = new AuthSession({
   token: 'fake-token',
   userId: 'user-1',
   expiresAt: '2099-01-01T00:00:00Z',
-};
+});
 
 function makeUseCase() {
   let lastInput: LoginInput | null = null;

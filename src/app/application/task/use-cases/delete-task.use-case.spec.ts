@@ -4,14 +4,14 @@ import { Task } from '@domain/task/task.entity';
 import { DeleteTaskUseCase } from './delete-task.use-case';
 import { TaskRepositoryPort } from '../ports/task-repository.port';
 
-const mockTask: Task = {
+const mockTask = new Task({
   id: 'task-1',
   title: 'Tarefa',
   status: 'TODO',
   priority: 'LOW',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
-};
+});
 
 function makeUseCase() {
   let deletedId: string | null = null;
