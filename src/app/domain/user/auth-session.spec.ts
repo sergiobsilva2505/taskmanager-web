@@ -17,9 +17,16 @@ describe('AuthSession.isExpired', () => {
     expect(session.isExpired()).toBe(true);
   });
 
-  it('retorna true se expiresAt é igual ao momento atual', () => {
+  it('retorna true se expiresAt é igual ao momento atual (limite)', () => {
     const now = new Date();
     const session = new AuthSession({ ...baseSessionProps, expiresAt: now.toISOString() });
     expect(session.isExpired(now)).toBe(true);
+  });
+
+  it('retorna false um milissegundo antes de expiresAt (logo antes do limite)', () => {
+    const expiresAt = new Date('2026-06-01T12:00:00.000Z');
+    const now = new Date(expiresAt.getTime() - 1);
+    const session = new AuthSession({ ...baseSessionProps, expiresAt: expiresAt.toISOString() });
+    expect(session.isExpired(now)).toBe(false);
   });
 });

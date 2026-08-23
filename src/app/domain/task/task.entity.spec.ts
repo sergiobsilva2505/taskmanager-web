@@ -39,6 +39,19 @@ describe('Task.isOverdue', () => {
     const task = new Task({ ...baseTaskProps, dueDate: '2099-01-01T00:00:00Z' });
     expect(task.isOverdue()).toBe(false);
   });
+
+  it('retorna false quando dueDate é exatamente igual ao momento atual (limite)', () => {
+    const now = new Date('2026-06-01T12:00:00.000Z');
+    const task = new Task({ ...baseTaskProps, dueDate: now.toISOString() });
+    expect(task.isOverdue(now)).toBe(false);
+  });
+
+  it('retorna true um milissegundo após o dueDate (logo após o limite)', () => {
+    const dueDate = new Date('2026-06-01T12:00:00.000Z');
+    const now = new Date(dueDate.getTime() + 1);
+    const task = new Task({ ...baseTaskProps, dueDate: dueDate.toISOString() });
+    expect(task.isOverdue(now)).toBe(true);
+  });
 });
 
 describe('Task.canAdvance / Task.nextStatus', () => {
