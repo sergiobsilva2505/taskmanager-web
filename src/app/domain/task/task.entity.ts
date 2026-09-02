@@ -1,6 +1,6 @@
-import { TaskPriority, TaskStatus } from './task.value-objects';
+import { TaskPriority, TaskStatus, canAdvance, nextStatus, statusProgress } from './task.value-objects';
 
-export interface Task {
+export interface TaskProps {
   id: string; // uuid
   title: string;
   description?: string;
@@ -11,7 +11,41 @@ export interface Task {
   updatedAt: string;
 }
 
-export function isOverdue(task: Task, now: Date = new Date()): boolean {
-  if (!task.dueDate || task.status === 'DONE' || task.status === 'CANCELLED') return false;
-  return new Date(task.dueDate) < now;
+export class Task {
+  readonly id: string;
+  readonly title: string;
+  readonly description?: string;
+  readonly status: TaskStatus;
+  readonly priority: TaskPriority;
+  readonly dueDate?: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+
+  constructor(props: TaskProps) {
+    this.id = props.id;
+    this.title = props.title;
+    this.description = props.description;
+    this.status = props.status;
+    this.priority = props.priority;
+    this.dueDate = props.dueDate;
+    this.createdAt = props.createdAt;
+    this.updatedAt = props.updatedAt;
+  }
+
+  isOverdue(now: Date = new Date()): boolean {
+    if (!this.dueDate || this.status === 'DONE' || this.status === 'CANCELLED') return false;
+    return new Date(this.dueDate) < now;
+  }
+
+  canAdvance(): boolean {
+    return canAdvance(this.status);
+  }
+
+  nextStatus(): TaskStatus {
+    return nextStatus(this.status);
+  }
+
+  progress(): number {
+    return statusProgress(this.status);
+  }
 }

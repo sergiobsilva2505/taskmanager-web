@@ -3,17 +3,17 @@ import { Injector } from '@angular/core';
 import { AuthSession } from '@domain/user/auth-session';
 import { AuthStateService } from './auth-state.service';
 
-const validSession: AuthSession = {
+const validSession = new AuthSession({
   token: 'valid-token',
   userId: 'user-1',
   expiresAt: '2099-01-01T00:00:00Z',
-};
+});
 
-const expiredSession: AuthSession = {
+const expiredSession = new AuthSession({
   token: 'expired-token',
   userId: 'user-2',
   expiresAt: '2020-01-01T00:00:00Z',
-};
+});
 
 function makeService() {
   const injector = Injector.create({

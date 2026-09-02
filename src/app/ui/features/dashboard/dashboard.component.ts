@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { Dashboard } from '@domain/task/dashboard.entity';
 import { GetDashboardUseCase } from '@application/task/use-cases/get-dashboard.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 
 @Component({
   selector: 'app-dashboard',
@@ -186,6 +187,7 @@ import { GetDashboardUseCase } from '@application/task/use-cases/get-dashboard.u
 })
 export class DashboardComponent implements OnInit {
   private readonly getDashboard = inject(GetDashboardUseCase);
+  private readonly logger = inject(LoggerPort);
 
   readonly data = signal<Dashboard | null>(null);
   readonly error = signal<string | null>(null);
@@ -198,7 +200,10 @@ export class DashboardComponent implements OnInit {
     this.getDashboard
       .execute()
       .then((d) => this.data.set(d))
-      .catch(() => this.error.set('Não foi possível carregar o painel. A API está rodando?'));
+      .catch((err) => {
+        this.logger.error('Falha ao carregar painel', err);
+        this.error.set('Não foi possível carregar o painel. A API está rodando?');
+      });
   }
 
   statusEntries(d: Dashboard): { key: string; value: number }[] {

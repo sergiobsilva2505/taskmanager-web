@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { Dashboard } from '@domain/task/dashboard.entity';
 import { GetDashboardUseCase } from '@application/task/use-cases/get-dashboard.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 import { DashboardComponent } from './dashboard.component';
 
 function flushMacrotask(): Promise<void> {
@@ -36,6 +37,7 @@ describe('DashboardComponent', () => {
       providers: [
         provideZonelessChangeDetection(),
         { provide: GetDashboardUseCase, useValue: { execute: getDashboardExecute } },
+        { provide: LoggerPort, useValue: { info: vi.fn(), error: vi.fn() } },
       ],
     });
   });

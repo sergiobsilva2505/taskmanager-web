@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Task } from '@domain/task/task.entity';
-import { nextStatus } from '@domain/task/task.value-objects';
 import { ListTasksUseCase } from '@application/task/use-cases/list-tasks.use-case';
 import { ChangeTaskStatusUseCase } from '@application/task/use-cases/change-task-status.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 import { StatusRingComponent } from '@ui/shared/status-ring.component';
 import { TaskFormComponent } from './task-form.component';
 
@@ -28,7 +28,7 @@ const PAGE_SIZE = 10;
             <button
               class="ring-btn"
               (click)="advanceStatus(task, $event)"
-              [disabled]="!nextStatus(task.status)"
+              [disabled]="!task.canAdvance()"
               [attr.aria-label]="'Avançar status de ' + task.title"
             >
               <app-status-ring [status]="task.status" />
@@ -127,13 +127,12 @@ const PAGE_SIZE = 10;
 export class TaskListComponent {
   private readonly listTasks = inject(ListTasksUseCase);
   private readonly changeStatus = inject(ChangeTaskStatusUseCase);
+  private readonly logger = inject(LoggerPort);
 
   readonly tasks = signal<Task[]>([]);
   readonly page = signal(0);
   readonly totalPages = signal(0);
   readonly error = signal<string | null>(null);
-
-  protected readonly nextStatus = nextStatus;
 
   constructor() {
     this.load();
@@ -151,9 +150,8 @@ export class TaskListComponent {
 
   async advanceStatus(task: Task, event: Event): Promise<void> {
     event.preventDefault();
-    const next = nextStatus(task.status);
-    if (!next) return;
-    const updated = await this.changeStatus.execute(task.id, next);
+    if (!task.canAdvance()) return;
+    const updated = await this.changeStatus.execute(task.id, task.nextStatus());
     this.tasks.update((list) => list.map((t) => (t.id === updated.id ? updated : t)));
   }
 
@@ -170,6 +168,9 @@ export class TaskListComponent {
         this.tasks.set(result.content);
         this.totalPages.set(result.totalPages);
       })
-      .catch(() => this.error.set('Não foi possível carregar as tarefas. A API está rodando?'));
+      .catch((err) => {
+        this.logger.error('Falha ao carregar lista de tarefas', err, { page: this.page() });
+        this.error.set('Não foi possível carregar as tarefas. A API está rodando?');
+      });
   }
 }

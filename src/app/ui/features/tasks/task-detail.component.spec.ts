@@ -5,13 +5,14 @@ import { provideRouter, Router } from '@angular/router';
 import { Task } from '@domain/task/task.entity';
 import { GetTaskByIdUseCase } from '@application/task/use-cases/get-task-by-id.use-case';
 import { DeleteTaskUseCase } from '@application/task/use-cases/delete-task.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 import { TaskDetailComponent } from './task-detail.component';
 
 function flushMacrotask(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-const mockTask: Task = {
+const mockTask = new Task({
   id: 'task-1',
   title: 'Revisar PR',
   description: 'Conferir os testes novos',
@@ -19,7 +20,7 @@ const mockTask: Task = {
   priority: 'HIGH',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-02T00:00:00Z',
-};
+});
 
 describe('TaskDetailComponent', () => {
   let getTaskExecute: ReturnType<typeof vi.fn>;
@@ -37,6 +38,7 @@ describe('TaskDetailComponent', () => {
         provideRouter([]),
         { provide: GetTaskByIdUseCase, useValue: { execute: getTaskExecute } },
         { provide: DeleteTaskUseCase, useValue: { execute: deleteTaskExecute } },
+        { provide: LoggerPort, useValue: { info: vi.fn(), error: vi.fn() } },
       ],
     });
   });
@@ -63,6 +65,46 @@ describe('TaskDetailComponent', () => {
     expect(fixture.nativeElement.querySelector('.description').textContent).toContain(
       'Conferir os testes novos',
     );
+  });
+
+  it('exibe o prazo com marcação de atrasada quando a tarefa está vencida', async () => {
+    getTaskExecute.mockResolvedValue(
+      new Task({
+        id: 'task-2',
+        title: 'Tarefa vencida',
+        status: 'TODO',
+        priority: 'LOW',
+        dueDate: '2020-01-01T00:00:00Z',
+        createdAt: '2019-12-01T00:00:00Z',
+        updatedAt: '2019-12-01T00:00:00Z',
+      }),
+    );
+
+    const fixture = await createComponent('task-2');
+    const dd: HTMLElement = fixture.nativeElement.querySelector('dd.overdue');
+
+    expect(dd).not.toBeNull();
+    expect(dd.textContent).toContain('· atrasada');
+    expect(fixture.nativeElement.querySelector('.description')).toBeNull();
+  });
+
+  it('exibe o prazo sem marcação quando a tarefa não está atrasada', async () => {
+    getTaskExecute.mockResolvedValue(
+      new Task({
+        id: 'task-3',
+        title: 'Tarefa futura',
+        status: 'TODO',
+        priority: 'LOW',
+        dueDate: '2099-01-01T00:00:00Z',
+        createdAt: '2026-01-01T00:00:00Z',
+        updatedAt: '2026-01-01T00:00:00Z',
+      }),
+    );
+
+    const fixture = await createComponent('task-3');
+
+    expect(fixture.nativeElement.querySelector('dd.overdue')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('· atrasada');
   });
 
   it('exibe mensagem de erro quando a tarefa não é encontrada', async () => {

@@ -5,11 +5,11 @@ import { GoogleLoginUseCase } from './google-login.use-case';
 import { AuthRepositoryPort } from '../ports/auth-repository.port';
 import { User } from '@domain/user/user.entity';
 
-const mockSession: AuthSession = {
+const mockSession = new AuthSession({
   token: 'google-token',
   userId: 'user-google',
   expiresAt: '2099-01-01T00:00:00Z',
-};
+});
 
 function makeUseCase() {
   let lastIdToken: string | null = null;
