@@ -20,11 +20,28 @@ export interface PagedResult<T> {
   totalPages: number;
 }
 
-export interface CreateTaskInput {
+export interface CreateTaskParams {
   title: string;
   description?: string;
   priority: TaskPriority;
   dueDate?: string;
+}
+
+export class CreateTaskInput {
+  readonly title: string;
+  readonly description?: string;
+  readonly priority: TaskPriority;
+  readonly dueDate?: string;
+
+  constructor(params: CreateTaskParams) {
+    const title = params.title.trim();
+    if (!title) throw new Error('O título da tarefa é obrigatório.');
+
+    this.title = title;
+    this.description = params.description?.trim() || undefined;
+    this.priority = params.priority;
+    this.dueDate = params.dueDate;
+  }
 }
 
 export abstract class TaskRepositoryPort {

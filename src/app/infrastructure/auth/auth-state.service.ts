@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { AuthSession, isExpired } from '@domain/user/auth-session';
+import { AuthSession } from '@domain/user/auth-session';
 
 const SESSION_KEY = 'tm_session';
 
@@ -9,7 +9,7 @@ export class AuthStateService {
 
   readonly isAuthenticated = computed(() => {
     const s = this.session();
-    return s !== null && !isExpired(s);
+    return s !== null && !s.isExpired();
   });
 
   readonly userId = computed(() => this.session()?.userId ?? null);
@@ -29,12 +29,12 @@ export class AuthStateService {
     try {
       const raw = sessionStorage.getItem(SESSION_KEY);
       if (!raw) return null;
-      const parsed: AuthSession = JSON.parse(raw);
-      if (isExpired(parsed)) {
+      const session = new AuthSession(JSON.parse(raw));
+      if (session.isExpired()) {
         sessionStorage.removeItem(SESSION_KEY);
         return null;
       }
-      return parsed;
+      return session;
     } catch {
       return null;
     }

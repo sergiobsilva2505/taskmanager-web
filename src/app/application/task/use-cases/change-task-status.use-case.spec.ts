@@ -5,14 +5,14 @@ import { ChangeTaskStatusUseCase } from './change-task-status.use-case';
 import { TaskRepositoryPort } from '../ports/task-repository.port';
 import { TaskStatus } from '@domain/task/task.value-objects';
 
-const mockTask: Task = {
+const mockTask = new Task({
   id: 'task-1',
   title: 'Tarefa',
   status: 'IN_PROGRESS',
   priority: 'MEDIUM',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
-};
+});
 
 function makeUseCase() {
   let lastId: string | null = null;
@@ -25,7 +25,7 @@ function makeUseCase() {
     changeStatus: (id, status) => {
       lastId = id;
       lastStatus = status;
-      return Promise.resolve({ ...mockTask, status });
+      return Promise.resolve(new Task({ ...mockTask, status }));
     },
     delete: () => Promise.resolve(),
     getDashboard: () =>

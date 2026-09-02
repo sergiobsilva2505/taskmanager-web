@@ -5,14 +5,14 @@ import { Task } from '@domain/task/task.entity';
 import { GetDashboardUseCase } from './get-dashboard.use-case';
 import { TaskRepositoryPort } from '../ports/task-repository.port';
 
-const mockTask: Task = {
+const mockTask = new Task({
   id: 'task-1',
   title: 'Tarefa mock',
   status: 'TODO',
   priority: 'MEDIUM',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
-};
+});
 
 const mockDashboard: Dashboard = {
   totalTasks: 10,

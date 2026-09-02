@@ -15,7 +15,11 @@ export function statusProgress(status: TaskStatus): number {
   }
 }
 
-export function nextStatus(status: TaskStatus): TaskStatus | null {
+export function canAdvance(status: TaskStatus): boolean {
+  return status === 'TODO' || status === 'IN_PROGRESS';
+}
+
+export function nextStatus(status: TaskStatus): TaskStatus {
   switch (status) {
     case 'TODO':
       return 'IN_PROGRESS';
@@ -23,6 +27,6 @@ export function nextStatus(status: TaskStatus): TaskStatus | null {
       return 'DONE';
     case 'DONE':
     case 'CANCELLED':
-      return null; // sem próximo — anel não clicável
+      throw new Error(`Não há próximo status para uma tarefa ${status}.`);
   }
 }

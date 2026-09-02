@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { LoginUseCase } from '@application/auth/use-cases/login.use-case';
 import { GoogleLoginUseCase } from '@application/auth/use-cases/google-login.use-case';
+import { LoggerPort } from '@application/shared/ports/logger.port';
 import { AuthStateService } from '@infrastructure/auth/auth-state.service';
 import { environment } from '@env/environment';
 
@@ -210,6 +211,7 @@ interface GoogleIdentityServices {
 export class LoginComponent implements OnInit {
   private readonly loginUseCase = inject(LoginUseCase);
   private readonly googleLoginUseCase = inject(GoogleLoginUseCase);
+  private readonly logger = inject(LoggerPort);
   private readonly authState = inject(AuthStateService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -238,7 +240,8 @@ export class LoginComponent implements OnInit {
       });
       this.authState.save(session);
       this.redirect();
-    } catch {
+    } catch (err) {
+      this.logger.error('Falha ao autenticar usuário', err, { email: this.email });
       this.error.set('E-mail ou senha incorretos.');
     } finally {
       this.loading.set(false);
@@ -276,7 +279,8 @@ export class LoginComponent implements OnInit {
       const session = await this.googleLoginUseCase.execute(idToken);
       this.authState.save(session);
       this.redirect();
-    } catch {
+    } catch (err) {
+      this.logger.error('Falha ao autenticar usuário via Google', err);
       this.error.set('Não foi possível entrar com o Google.');
     } finally {
       this.loading.set(false);
